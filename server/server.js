@@ -14,7 +14,7 @@ app.use(urlencoded({ extended: true })); //allow us to attach parameters to a ur
 app.use(morgan("dev"));
 app.use(router); 
 app.use("/images", express.static("images"));
-// uploadFile()
+
 
 
 app.listen(port, () => {

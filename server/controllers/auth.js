@@ -1,5 +1,6 @@
 const conn = require("../config/db.js");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
 const check_email=async (email)=>{
     let [results] = await conn.execute("SELECT user_id FROM users WHERE email = ?", [
@@ -16,6 +17,9 @@ const signup = async (req, res, next) => {
         if(!(await check_email(data.email)))
         {
             let hashedPassword = await bcrypt.hash(data.password, 12);
+            const token = jwt.sign({ email: data.body }, "devday22", {
+                expiresIn: "1h",
+                });
             const [result] = await conn.execute(
                 "INSERT INTO users( firstname,lastname,email,password,profile_picture_url) VALUES(?,?,?,?,?)",
                 [
@@ -28,7 +32,7 @@ const signup = async (req, res, next) => {
               );
             if(result.affectedRows > 0)
             {
-                res.status(200).json({ message: "done" ,status:true});
+                res.status(200).json({ message: "done",id:result.insertId,token:token ,status:true});
             } else
             {
                 throw(result)
@@ -51,6 +55,9 @@ const login = async (req, res, next) => {
         let [result]=await conn.execute("SELECT * from users where email = ?",[data.email])
         if(result.length>0)
         {
+            const token = jwt.sign({ email: data.body }, "devday22", {
+                expiresIn: "1h",
+                });
             let isCorrect = await bcrypt.compare(data.password, result[0].password);
             if(isCorrect)
             {
@@ -60,7 +67,7 @@ const login = async (req, res, next) => {
                     "lastname":result[0].lastname,
                     "email":result[0].email,
                     "profile_picture_url":result[0].profile_picture_url,
-                } ,status:true});
+                },token:token ,status:true});
             }else
             {
                 throw("Passowrd error")

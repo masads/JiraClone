@@ -3,11 +3,15 @@
   box-sizing: border-box;
 }
 body {
-  background: #1C8EF9 !important;
+  /* background: linear-gradient(90deg, rgba(0,255,248,1) 6%, rgba(0,14,255,1) 100%); */
   min-height: 100vh;
   display: flex;
   font-weight: 400;
   font-family: 'Fira Sans', sans-serif;
+}
+.App
+{
+  background: linear-gradient(90deg, rgba(0,255,248,1) 6%, rgba(0,14,255,1) 100%);
 }
 h1,h2,h3,h4,h5,h6,label,span {
   font-weight: 500;

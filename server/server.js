@@ -5,7 +5,7 @@ const cors = require("cors");
 const app = express();
 const router = require("./routes/routes.js");
 const { uploadFile }= require("./config/s3")
-const port = 9000;
+const port = 8080;
 
 //middleware
 app.use(cors()); //making cross-domain requests possible

@@ -4,6 +4,7 @@ const check_project_code=async (code)=>{
     let [results] = await conn.execute("SELECT project_code FROM projects WHERE project_code = ?", [
         code,
       ]);
+      console.log(results.length<=0 )
     return results.length<=0 
 }
 
@@ -18,6 +19,7 @@ const userJoin=async (code,userid)=>{
     let [results] = await conn.execute("SELECT * FROM projects_users WHERE project_code = ? and user_id=?", [
         code,userid,
       ]);
+      console.log(results.length<=0)
     return results.length<=0
 }
 

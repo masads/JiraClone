@@ -4,6 +4,7 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Card from "react-bootstrap/Card";
 import Button from "react-bootstrap/Button";
+import Badge from "react-bootstrap/Badge";
 import Stack from "react-bootstrap/Stack";
 import Form from "react-bootstrap/Form";
 import ProgressBar from "react-bootstrap/ProgressBar";
@@ -211,10 +212,10 @@ function ProjectFeed() {
         <Row className="mt-4">
           {projectData.map((project) => (
             <Col lg={3}>
-              <Card className="mb-4 border border-dark rounded-0">
-                <Card.Body>
+              <Card className="mb-4 border border-dark ">
+                <Card.Body className="text-center">
                   <Card.Title>{project.project_name.toUpperCase()}</Card.Title>
-                  <h6>Code:{project.project_code}</h6>
+                  <h6><Badge variant="bg-secondary">{project.project_code}</Badge></h6>
                 </Card.Body>
                 <Button className="rounded-0" variant="primary" onClick={()=>{navigate(`/projects/${project.project_code}`)}} >
                   {<EyeFill />} View Project

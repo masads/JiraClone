@@ -43,7 +43,12 @@ const isUserExisit=async(email)=>{
       ]);
     return results.length>0 
 }
-
+const isUserMember=async(id,code,status)=>{
+    let [results] = await conn.execute("SELECT project_code FROM projects_users WHERE project_code = ? and user_id=? and role=?", [
+        code,id,status
+      ]);
+    return results.length>0 
+}
 const createProject = async (req, res, next) => {
     
     const data=req.body;
@@ -105,7 +110,7 @@ const userJoinProject=async(req,res,next)=>{
             [
                 data.project_code,
                 data.user_id,
-                data.status
+                "member"
             ]
             );
             if(result.affectedRows>0)
@@ -169,6 +174,43 @@ const getProjects=async(req,res,next)=>{
         res.status(404).json({ message: err ,status:false});
     }
 }
+const getProjectReport=async(req,res,next)=>{
+    const data=req.query
+    try
+    {
+        let [result]=await conn.execute("SELECT P.* from projects_users PU JOIN projects P on P.project_code=PU.project_code  where PU.user_id=?",
+        [data.admin_id])
+        if(result.length>0)
+        {
+            for(let i=0;i<result.length;i++)
+            {
+                console.log(result[i])
+                let [tasks]=await conn.execute("SELECT * from tasks where project_code=?",
+                [result[i].project_code])
+                result[i]["taskgenerated"]=tasks.length
+                for(let j=0;j<tasks.length;j++)
+                {
+                    let [time]=await conn.execute("SELECT TIMEDIFF(end_time,start_time) as 'time' FROM tasklog WHERE task_id=? and status='inProgress'",
+                    [tasks[j].task_id])
+                    let totalTime=0
+                    time.forEach((Element)=>{
+                        totalTime=totalTime+Element.time
+                    })
+                    tasks[j]["time"]=totalTime
+                }
+                result[i]["tasks"]=[tasks]
+            }
+
+            res.status(200).json({ message: result ,status:true});
+        }else
+        {
+            throw("Error in getting projects report")
+        }
+    }catch(err)
+    {
+        res.status(404).json({ message: err ,status:false});
+    }
+}
 const addMember=async(req,res,next)=>{
     const data=req.body
     try{
@@ -220,4 +262,34 @@ const addMember=async(req,res,next)=>{
     }
 }
 
-module.exports = { createProject,userJoinProject,removeMemberFromProject,getProjects,addMember };
+const changeRole=async(req,res,next)=>{
+    const data=req.body
+    try{
+        if(await check_project_code_and_isAdmin(data.project_code,data.admin_id) && isUserMember(data.user_id,data.project_code,data.status))
+        {
+            const [result] = await conn.execute(
+                "UPDATE projects_users SET role=? where user_id=? and project_code=? and role=?",
+                [
+                    data.newStatus,
+                    data.user_id,
+                    data.project_code,
+                    data.status
+                ]
+                );
+                if( result.affectedRows>0 )
+                {
+                    res.status(200).json({ message: "Role Updated" ,status:true});
+                }else
+                {
+                    throw("Error found in Role updation")
+                }
+        }else
+        {
+            throw("Error in adding member")
+        }
+    }catch(err)
+    {
+        res.status(404).json({ message: err ,status:false});
+    }
+}
+module.exports = { createProject,userJoinProject,removeMemberFromProject,getProjects,addMember,getProjectReport,changeRole };

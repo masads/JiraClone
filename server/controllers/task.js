@@ -90,7 +90,7 @@ const updateTask=async(req,res,next)=>{
                 res.status(200).json({ message: "Task Updated" ,status:true});
             }else
             {
-                throw("Error found in project creation")
+                throw("Error found in project update")
             }
         }else
         {
@@ -164,7 +164,16 @@ const getTasks=async(req,res,next)=>{
         let [result]=await conn.execute("SELECT * from tasks where project_code=?",
         [data.code])
         if(result.length>0)
-        {
+        {   
+            for(let i=0;i<result.length;i++)
+            {
+                if(result[i].assigned_user_id!=null)
+                {
+                    let [user]=await conn.execute("SELECT * from users where user_id=?",
+                    [result[i].assigned_user_id])
+                    result[i].assigned_user_id=user[0]
+                }
+            }
             res.status(200).json({ message: result ,status:true});
         }else
         {

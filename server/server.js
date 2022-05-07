@@ -17,6 +17,6 @@ app.use("/images", express.static("images"));
 
 
 
-app.listen(port, () => {
-  console.log(`App listening at http://localhost:${port}`);
+app.listen(port,"192.168.1.6", () => {
+  console.log(`App listening at http://192.168.1.6:${port}`);
 });

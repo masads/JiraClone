@@ -123,6 +123,7 @@ const updateStatus=async(req,res,next)=>{
     try
     {
         let isUser=await check_task_with_id(data.user_id,data.task_id)
+        console.log(isUser)
         let isAdmin=await check_project_code_and_isAdmin(data.project_code,data.user_id)
         console.log(isAdmin,isUser)
         if(data.status=='Closed')

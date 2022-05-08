@@ -32,7 +32,7 @@ function ProjectFeed() {
   const [ projectData,setProjectData ]=useState([])
 
   let getProjects=async()=>{
-    let response = await client.get(`/getprojects?userid=1`,).then(
+    let response = await client.get(`/getprojects?userid=${userData.userid}`,).then(
       (response) => {
         console.log("get projects sucessfully");
         return response.data;
@@ -70,7 +70,7 @@ function ProjectFeed() {
     const data=
     {
       "project_code":joinProjectKey,
-      "user_id":"1"
+      "user_id":userData.userid
     }
     console.log(data)
     let response = await client.post(`/joinproject`,data).then(
@@ -97,7 +97,7 @@ function ProjectFeed() {
     {
       "project_code":newProjectHash,
       "project_name":newProjectName,
-      "user_id":"1"
+      "user_id":userData.userid
     }
     console.log(data)
     let response = await client.post(`/createproject`,data).then(

@@ -9,7 +9,7 @@ import Navbar from './components/Navbar'
 import SingleProject from './components/SingleProject'
 import Report from './components/Report'
 function App() {  
-  const [userToken, setUserToken] = useState("asdasd");
+  const [userToken, setUserToken] = useState(null);
   const [userData, setUserData] = useState({});
   const authContext = useMemo(() => {
     return {
@@ -48,7 +48,7 @@ function App() {
       <Router>
       <Navbar />
           <Routes>
-            <Route path="*" element={(userToken)?(<Navigate to='/home' />):(<Navigate to='/log-in' />)} />
+            <Route path="*" element={(userToken)?(<Navigate to='/projects' />):(<Navigate to='/log-in' />)} />
             <Route path="/log-in" element={<Login />} />
             <Route path="/sign-up" element={<SignUp />} />
             <Route path="/projects"  >

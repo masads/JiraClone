@@ -8,7 +8,8 @@ import ProgressBar from "react-bootstrap/ProgressBar";
 import Modal from "react-bootstrap/Modal";
 import axios from "axios";
 import API_URL from "../components/API_URL";
-import { useState } from "react";
+import { useState, useContext } from "react";
+import { AuthContext } from "./context";
 import { useNavigate,useParams } from "react-router-dom";
 import {
   BookmarkFill,
@@ -31,7 +32,9 @@ const client = axios.create({
 function SingleProject() {
   const { projectid } = useParams();
   const [reload,setReload]=useState(false)
+  const { userToken,userData } = useContext(AuthContext);
   console.log(projectid)
+  console.log("use data",userData)
   // Add Member Form State
   const [members, setMembers] = useState([]);
   const [newStatus,setNewStatus]=useState({})
@@ -88,7 +91,7 @@ function SingleProject() {
   }
   let sendMail=async()=>{
     let response = await client.post("/addmember",{
-      "admin_id":"1",
+      "admin_id":userData.userid,
       "project_code":projectid,
       "user_email":newMemberEmail
     }).then(
@@ -111,7 +114,7 @@ function SingleProject() {
   let removeMember=async(user_id)=>{
     console.log(user_id,projectid)
     let response = await client.post("/removemember",{
-      "admin_id":"1",
+      "admin_id":userData.userid,
       "project_code":projectid,
       "user_id":user_id
     }).then(
@@ -135,7 +138,7 @@ function SingleProject() {
   let addTaskData=async(nature,name,description,start_date,end_date)=>{
     console.log(projectid)
     let response = await client.post("/createtask",{
-      "user_id":"1",
+      "user_id":userData.userid,
       "project_code":projectid,
       "nature":nature,
       "name":name,
@@ -161,7 +164,7 @@ function SingleProject() {
   }
   let updateTasks=async(assigned_id,nature,name,newName,description,start_date,end_date)=>{
     let response = await client.post("/updatetask",{
-      "admin_id":"1",
+      "admin_id":userData.userid,
       "user_id":assigned_id,
       "project_code":projectid,
       "nature":(nature==1)?("task"):("bug"),
@@ -190,7 +193,7 @@ function SingleProject() {
   let updateStatus=async(status,newStatus,task_id)=>{
     console.log(isWhichStatus(status),newStatus,taskId)
     let response = await client.post("/updatetask",{
-      "user_id":"2",
+      "user_id":userData.userid,
       "status":isWhichStatus(status),
       "newstatus":newStatus,
       "task_id":task_id,

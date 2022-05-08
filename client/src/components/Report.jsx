@@ -11,7 +11,8 @@ import { Radio } from "antd";
 import Modal from "react-bootstrap/Modal";
 import Form from "react-bootstrap/Form";
 import Badge from "react-bootstrap/Badge";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
+import { AuthContext } from "./context";
 import axios from "axios";
 import API_URL from "../components/API_URL";
 
@@ -31,7 +32,7 @@ function Report() {
     "Check UI",
     "Check UX",
   ];
-
+  const { userToken,userData } = useContext(AuthContext);
   const [tasksModalShow, setTaskModalShow] = useState(false);
   const [projects, setProjects] = useState([]);
   const [tasks, setTasks] = useState([]);
@@ -54,7 +55,7 @@ function Report() {
   };
 
   let getProjects=async()=>{
-    let response = await client.get("http://192.168.0.105:1234/getprojectreport?admin_id=1").then(
+    let response = await client.get(`http://192.168.0.105:1234/getprojectreport?admin_id=${userData.userid}`).then(
       (response) => {
         console.log("get tasks sucessfully");
         return response.data;

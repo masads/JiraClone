@@ -21,6 +21,7 @@ const check_task_with_id=async (userid,id)=>{
         id,
         userid
       ]);
+      console.log(results)
     return results.length>0
 }
 
@@ -29,7 +30,7 @@ const createTask = async (req, res, next) => {
     const data=req.body;
     try{
         
-        if(await check_project_code_and_isAdmin(data.project_code,data.admin_id) && await check_task(data.name,data.project_code))
+        if(await check_project_code_and_isAdmin(data.project_code,data.user_id) && await check_task(data.name,data.project_code))
         {
             const [result1] = await conn.execute(
             "INSERT INTO tasks(project_code,name,nature,description,start_date,end_date,assigned_user_id) VALUES(?,?,?,?,?,?,?)",
@@ -38,16 +39,16 @@ const createTask = async (req, res, next) => {
                 data.name,
                 data.nature,
                 data.description,
-                data.start_date,
+                data.start_date,    
                 (data.end_date==null)?(null):(data.end_date),
-                (data.user_id==null)?(null):(data.user_id)
+                null
             ]
             );
             const [result2] = await conn.execute(
                 "INSERT INTO tasklog(task_id,status) VALUES(?,?)",
                 [
                     result1.insertId,
-                    "todo",
+                    "Todo",
                 ]
                 );
             if( result1.affectedRows>0 && result2.affectedRows>0)
@@ -70,8 +71,13 @@ const createTask = async (req, res, next) => {
 const updateTask=async(req,res,next)=>{
     const data=req.body;
     try{
-        
-        if(await check_project_code_and_isAdmin(data.project_code,data.admin_id) && !(await check_task(data.name,data.project_code)) && await check_task(data.newName,data.project_code))
+        console.log(data)
+        let isName=true
+        if(data.name!=data.newName)
+        {
+            isName=await check_task(data.newName,data.project_code)
+        }
+        if(await check_project_code_and_isAdmin(data.project_code,data.admin_id) && !(await check_task(data.name,data.project_code)) && isName)
         {
             const [result] = await conn.execute(
             "UPDATE tasks SET name=?,nature=?,description=?,end_date=?,assigned_user_id=? where name=? and project_code=?",
@@ -80,7 +86,7 @@ const updateTask=async(req,res,next)=>{
                 data.nature,
                 data.description,
                 (data.end_date==null)?(null):(data.end_date),
-                (data.user_id==null)?(null):(data.user_id),
+                (data.user_id==null || data.user_id==0)?(null):(data.user_id),
                 data.name,
                 data.project_code,
             ]
@@ -111,12 +117,15 @@ const updateStatus=async(req,res,next)=>{
     let hours = date_ob.getHours();
     let minutes = date_ob.getMinutes();
     let seconds = date_ob.getSeconds();
+    console.log("a")
+    console.log(data)
     let dateTime = year + "-" + month + "-" + day + " " + hours + ":" + minutes + ":" + seconds;
     try
     {
         let isUser=await check_task_with_id(data.user_id,data.task_id)
         let isAdmin=await check_project_code_and_isAdmin(data.project_code,data.user_id)
-        if(data.status=='closed')
+        console.log(isAdmin,isUser)
+        if(data.status=='Closed')
         {
             isUser=false
         }
@@ -165,8 +174,12 @@ const getTasks=async(req,res,next)=>{
         [data.code])
         if(result.length>0)
         {   
+
             for(let i=0;i<result.length;i++)
             {
+                let [status]=await conn.execute("SELECT status from tasklog where task_id=? and end_time is null",
+                [result[i].task_id])
+                result[i]["status"]=status[0]
                 if(result[i].assigned_user_id!=null)
                 {
                     let [user]=await conn.execute("SELECT * from users where user_id=?",

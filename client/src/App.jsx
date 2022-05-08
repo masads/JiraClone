@@ -3,7 +3,6 @@ import './App.css'
 import { BrowserRouter as Router, Routes, Route, Link, Navigate } from 'react-router-dom'
 import Login from './components/login'
 import SignUp from './components/signup'
-import Home from './components/home'
 import Project from './components/ProjectFeed'
 import { AuthContext } from "./components/context";
 import Navbar from './components/Navbar'
@@ -52,7 +51,6 @@ function App() {
             <Route path="*" element={(userToken)?(<Navigate to='/home' />):(<Navigate to='/log-in' />)} />
             <Route path="/log-in" element={<Login />} />
             <Route path="/sign-up" element={<SignUp />} />
-            {/* <Route path="/home" element={(userToken)?(<Home />):(<Navigate to='/log-in' />)} /> */}
             <Route path="/projects"  >
               <Route index={true} element={(userToken)?(<Project />):(<Navigate to='/log-in' />)} />
               <Route index={false} path=":projectid" element={<SingleProject />} />

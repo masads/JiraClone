@@ -135,6 +135,7 @@ const userJoinProject=async(req,res,next)=>{
 const removeMemberFromProject = async (req, res, next) => {
     
     const data=req.body;
+    console.log(data)
     try{
         let isAdmin=await check_project_code_and_isAdmin(data.project_code,data.admin_id)
         let isUserExisit=await check_user_in_project(data.project_code,data.user_id)
@@ -294,4 +295,22 @@ const changeRole=async(req,res,next)=>{
         res.status(404).json({ message: err ,status:false});
     }
 }
-module.exports = { createProject,userJoinProject,removeMemberFromProject,getProjects,addMember,getProjectReport,changeRole };
+const getMember=async(req,res,next)=>{
+    const data=req.query
+    try
+    {
+        let [result]=await conn.execute("SELECT U.* FROM projects_users PU join users U on PU.user_id=U.user_id where PU.project_code='REN' ",
+        [data.code])
+        if(result.length>0)
+        {   
+            res.status(200).json({ message: result ,status:true});
+        }else
+        {
+            throw("Error in getting tasks")
+        }
+    }catch(err)
+    {
+        res.status(404).json({ message: err ,status:false});
+    }
+}
+module.exports = { createProject,userJoinProject,removeMemberFromProject,getProjects,addMember,getProjectReport,changeRole,getMember };

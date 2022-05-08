@@ -2,7 +2,7 @@ const express = require("express");
 const multer = require("multer");
 const { signup, login} = require("../controllers/auth.js");
 const { saveImage,getImage } = require("../controllers/images.js");
-const { createProject,userJoinProject,removeMemberFromProject,getProjects,addMember,getProjectReport,changeRole } = require("../controllers/project.js")
+const { createProject,userJoinProject,removeMemberFromProject,getProjects,addMember,getProjectReport,changeRole,getMember } = require("../controllers/project.js")
 const { createTask,updateTask,updateStatus,getTasks } = require("../controllers/task.js")
 
 const storage = multer.diskStorage({
@@ -23,7 +23,7 @@ router.get("/getprojects",getProjects)
 router.get("/getprojectreport",getProjectReport)
 router.post("/changerole",changeRole)
 router.post("/addmember",addMember)
-router.delete("/removemember",removeMemberFromProject)
+router.post("/removemember",removeMemberFromProject)
 router.post("/createproject",createProject)
 router.post("/joinproject",userJoinProject)
 router.post("/createtask",createTask)
@@ -32,5 +32,6 @@ router.post("/updatestatus",updateStatus)
 router.get("/gettasks",getTasks)
 router.post("/images", upload.single('image'), saveImage);
 router.get("/images",getImage)
+router.get("/getmembers",getMember)
 
 module.exports = router;

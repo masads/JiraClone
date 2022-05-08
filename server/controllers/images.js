@@ -11,7 +11,7 @@ const saveImage = async (req, res, next) => {
 };
 
 const getImage = (req, res, next) => {
-    console.log(path.join(__dirname, "../"))
+    console.log(req.query.path)
     if (
       fs.existsSync(path.join(__dirname, "../") + "/images/" + req.query.path)
     ) {

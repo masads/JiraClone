@@ -15,6 +15,9 @@ app.use(morgan("dev"));
 app.use(router);
 app.use("/images", express.static("images"));
 
-app.listen(port, "192.168.0.105", () => {
-  console.log(`App listening at http://192.168.1.6:${port}`);
+// app.listen(port, "192.168.0.105", () => {
+//   console.log(`App listening at http://192.168.1.6:${port}`);
+// });
+app.listen(port, () => {
+  console.log(`App listening at http:/localhost:${port}`);
 });
